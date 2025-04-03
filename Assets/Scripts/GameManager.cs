@@ -30,4 +30,9 @@ public class GameManager : MonoBehaviour
     {
         return Ref_CardPoolManager.GetCardContainer(ref setParent);
     }
+
+    public void BackToPool(CardContainer container)
+    {
+        Ref_CardPoolManager.BackToPool(container);
+    }
 }

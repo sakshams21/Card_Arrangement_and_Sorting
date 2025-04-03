@@ -91,6 +91,7 @@ public class CardManager : MonoBehaviour
     {
         int direction = _index1 - _index2;
 
+        //card moved from left to right
         if (direction < 0)
         {
             for (int i = _index1 + 1; i < _index2; i++)
@@ -104,11 +105,9 @@ public class CardManager : MonoBehaviour
                     _allCardParentList[i - 1].MoveCard(_allCardParentList[i].Ref_Card);
                     _allCardParentList[i].Ref_Card = null;
                 }
-                
-                
             }
         }
-        else if (direction > 0)
+        else if (direction > 0) //card moved from right to left
         {
             for (int i = _index1 - 1; i > _index2; i--)
             {
@@ -122,6 +121,52 @@ public class CardManager : MonoBehaviour
                     _allCardParentList[i].Ref_Card = null;
                 }
             }
+        }
+
+        RemoveEmpty(_index1);
+    }
+
+    // check for empty group check from initial place towards left if there are any empty keep 2 and remove rest
+    private void RemoveEmpty(int startingIndex)
+    {
+        int left = startingIndex - 1;
+        int right = left + 1;
+        int emptyCount = 0;
+        while (left >= 0 && right < _allCardParentList.Count)
+        {
+            bool foundNull = false;
+
+            if (_allCardParentList[left].Ref_Card == null)
+            {
+                emptyCount++;
+                foundNull = true;
+                if (emptyCount > 2)
+                {
+                    GameManager.Instance.BackToPool(_allCardParentList[left]);
+                    _allCardParentList.RemoveAt(left);
+                }
+                else
+                {
+                    left--;
+                }
+            }
+
+            if (right < _allCardParentList.Count && _allCardParentList[right].Ref_Card == null)
+            {
+                emptyCount++;
+                foundNull = true;
+                if (emptyCount > 2)
+                {
+                    GameManager.Instance.BackToPool(_allCardParentList[right]);
+                    _allCardParentList.RemoveAt(right);
+                }
+                else
+                {
+                    right++;
+                }
+            }
+
+            if (!foundNull) break;
         }
     }
 
@@ -139,7 +184,7 @@ public class CardManager : MonoBehaviour
         else
             _currentlySelected.Remove(cardRef);
 
-        GameEventManager.ToggleButton(_currentlySelected.Count > 0);
+        GameEventManager.ToggleButton(_currentlySelected.Count > 1);
     }
     
     private void GenerateGroup()
@@ -149,16 +194,18 @@ public class CardManager : MonoBehaviour
         _allCardParentList.Add(GameManager.Instance.GetCardContainer(ref Card_SpawnPoint));
 
 
-        //make the selected cards container null 
+        //make the selected cards container null
         foreach (Card item in _currentlySelected)
         {
             _allCardParentList[item.transform.parent.GetSiblingIndex()].Ref_Card = null;
         }
 
+        //RemoveEmpty();
+
         ShiftRest();
 
         //shift the selected cards to end
-        int cardParentLength = _allCardParentList.Count - 1;
+        int cardParentLength = _allCardParentList.Count;
         for (int i = 0; i < _currentlySelected.Count; i++)
         {
             _allCardParentList[cardParentLength - _currentlySelected.Count + i].MoveCard(_currentlySelected[i], true);

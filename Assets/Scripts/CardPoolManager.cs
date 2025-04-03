@@ -24,12 +24,14 @@ public class CardPoolManager : MonoBehaviour
             : _containerPool.Dequeue();
 
         card.transform.SetParent(setParent);
+        card.gameObject.SetActive(true);
         return card;
     }
 
     public void BackToPool(CardContainer cardContainer)
     {
         cardContainer.transform.SetParent(Spawn_Transform);
+        cardContainer.gameObject.SetActive(false);
         _containerPool.Enqueue(cardContainer);
     }
 }
