@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,40 +17,42 @@ public class Card : MonoBehaviour, IPointerUpHandler, IBeginDragHandler, IDragHa
 
     private bool _isSelected;
 
-    public static event Action<Card, bool> OnCardClicked;
-    public static event Action<int> OnDragBegin;
-    public static event Action<int> OnDragEnd;
-
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (_isSelected) return;
         NextParent = transform.parent;
         CardImage.raycastTarget = false;
-        OnDragBegin?.Invoke(transform.parent.GetSiblingIndex());
+        //ChangeState(false);
+        GameEventManager.InvokeDragBegin(transform.parent.GetSiblingIndex());
         transform.SetParent(GameManager.Instance.MainCanvas.transform);
         _isDragging = true;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (_isSelected) return;
         Card_RectTransform.position = Input.mousePosition;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (_isSelected) return;
         Card_RectTransform.position = Input.mousePosition;
         transform.SetParent(NextParent);
-        transform.DOLocalMove(Vector3.zero, 0.5f).SetEase(Ease.Linear);
+        transform.DOLocalMove(Vector3.zero, 0.25f).SetEase(Ease.Linear);
         CardImage.raycastTarget = true;
-        _isDragging = false;
+
+        StartCoroutine(FrameWait());
+
+        IEnumerator FrameWait()
+        {
+            yield return new WaitForEndOfFrame();
+            _isDragging = false;
+        }
+        
         if (_isSelected) ChangeState();
     }
 
     public void OnDrop(PointerEventData eventData)
     {
-        OnDragEnd?.Invoke(transform.parent.GetSiblingIndex());
+        GameEventManager.InvokeDragEnd(transform.parent.GetSiblingIndex());
         CardContainer parent = transform.GetComponentInParent<CardContainer>();
 
         GameManager.Instance.GetNeighBoruCardContainer(transform.parent.GetSiblingIndex())
@@ -63,8 +65,9 @@ public class Card : MonoBehaviour, IPointerUpHandler, IBeginDragHandler, IDragHa
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (_isDragging) return;
         ChangeState();
-        OnCardClicked?.Invoke(this, _isSelected);
+        GameEventManager.InvokeCardClicked(this, _isSelected, transform.parent.GetSiblingIndex());
     }
 
     public void LoadCardTexture(Sprite cardImage, string cardName)
@@ -73,17 +76,20 @@ public class Card : MonoBehaviour, IPointerUpHandler, IBeginDragHandler, IDragHa
         _cardName = cardName;
     }
 
-    private void ChangeState()
+    private void ChangeState(bool move = true)
     {
         if (_isDragging) return;
         _isSelected = !_isSelected;
         CardOutline.enabled = _isSelected;
-        transform.localPosition += Vector3.up * OffSet * (_isSelected ? 1 : -1);
+        if (move)
+            transform.localPosition += Vector3.up * OffSet * (_isSelected ? 1 : -1);
     }
 
-    public void MoveCard(int newIndex)
+    public void ShufflingCard(bool grouping = false)
     {
-        ChangeState();
-        transform.parent.SetSiblingIndex(newIndex);
+        _isSelected = false;
+        CardOutline.enabled = _isSelected;
+        if (!grouping)
+            GameEventManager.InvokeCardClicked(this, _isSelected, transform.parent.GetSiblingIndex());
     }
 }

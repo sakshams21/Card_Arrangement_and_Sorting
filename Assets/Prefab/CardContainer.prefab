@@ -94,7 +94,7 @@ MonoBehaviour:
   CardImage: {fileID: 4522807956536491046}
   CardOutline: {fileID: 471223416970797600}
   OffSet: 40
-  IndexAfterDrag: 0
+  NextParent: {fileID: 0}
 --- !u!114 &5689386213159401858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,8 +183,8 @@ RectTransform:
   - {fileID: 4352610179402999639}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -201,3 +201,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Ref_Card: {fileID: 8971638984065212855}
+  ToBeShifted: 0

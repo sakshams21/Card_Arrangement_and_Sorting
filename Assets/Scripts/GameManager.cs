@@ -4,15 +4,16 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    public static GameManager Instance { get; private set; }
 
     [SerializeField] private CardManager Ref_CardManager;
-    public GraphicRaycaster MainCanvas_GraphicRaycaster;
+    [SerializeField] private CardPoolManager Ref_CardPoolManager;
+    [SerializeField] private UserInterface Ref_UserInterface;
     public Canvas MainCanvas;
 
     private void Awake()
     {
-        if (Instance == null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
         }
@@ -23,5 +24,10 @@ public class GameManager : MonoBehaviour
     public CardContainer GetNeighBoruCardContainer(int neighbourCardIndex)
     {
         return Ref_CardManager.GetNeighbor(neighbourCardIndex);
+    }
+
+    public CardContainer GetCardContainer(ref Transform setParent)
+    {
+        return Ref_CardPoolManager.GetCardContainer(ref setParent);
     }
 }

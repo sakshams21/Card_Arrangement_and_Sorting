@@ -5,26 +5,31 @@ using UnityEngine;
 public class CardPoolManager : MonoBehaviour
 {
     [SerializeField] private int MaxPoolSize = 10;
-    [SerializeField] private CardContainer CardParent_Prefab;
+    [SerializeField] private CardContainer CardContainer_Prefab;
     [SerializeField] private Transform Spawn_Transform;
-    private Queue<CardContainer> _parentPool = new Queue<CardContainer>();
+    private Queue<CardContainer> _containerPool = new Queue<CardContainer>();
 
     private void Start()
     {
         for (int i = 0; i < MaxPoolSize; i++)
         {
-            _parentPool.Enqueue(Instantiate(CardParent_Prefab, Spawn_Transform));
+            _containerPool.Enqueue(Instantiate(CardContainer_Prefab, Spawn_Transform));
         }
     }
 
-    public CardContainer GetCardParent()
+    public CardContainer GetCardContainer(ref Transform setParent)
     {
-        return _parentPool.Count <= 0 ? Instantiate(CardParent_Prefab, Spawn_Transform) : _parentPool.Dequeue();
+        CardContainer card = _containerPool.Count <= 0
+            ? Instantiate(CardContainer_Prefab, Spawn_Transform)
+            : _containerPool.Dequeue();
+
+        card.transform.SetParent(setParent);
+        return card;
     }
 
     public void BackToPool(CardContainer cardContainer)
     {
         cardContainer.transform.SetParent(Spawn_Transform);
-        _parentPool.Enqueue(cardContainer);
+        _containerPool.Enqueue(cardContainer);
     }
 }
