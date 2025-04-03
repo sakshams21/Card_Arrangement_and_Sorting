@@ -5,7 +5,7 @@ Card Arrangement is
 
 
 ## Gameplay Preview
-![Watch Gameplay](/Assets/Gameplay%20Recording/Gameplay.gif)  
+![Watch Gameplay](/Gameplay%20Recording/Gameplay.gif)  
 
 ### Playing the Game
 - Load information about cards to be loaded from json file.
