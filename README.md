@@ -1,9 +1,4 @@
 # Card Arrangement Prototype
-
-## Overview
-Card Arrangement is
-
-
 ## Gameplay Preview
 ![Watch Gameplay](/Gameplay%20Recording/Gameplay.gif)  
 
